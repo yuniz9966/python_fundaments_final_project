@@ -16,15 +16,14 @@ def search_movies_by_keyword(keyword):
 
     try:
         with connection.cursor() as cursor:
-            sql_query = """
-            SELECT title, release_year FROM film
+            sql_query = """  SELECT title, release_year, description FROM film
             WHERE concat(title, description) LIKE %s 
             LIMIT 10
             """
             search_term = f"%{keyword}%"
             cursor.execute(sql_query, (search_term,))
             result = cursor.fetchall()
-            return result
+            return result, sql_query
     finally:
         connection.close()
 
@@ -35,8 +34,7 @@ def search_movies_by_genre_and_year(genre, year):
 
     try:
         with connection.cursor() as cursor:
-            sql_query = """
-            SELECT f.* FROM film f
+            sql_query = """  SELECT f.* FROM film f
             JOIN film_category fc ON f.film_id = fc.film_id
             JOIN category c ON fc.category_id = c.category_id
             WHERE c.name = %s AND f.release_year = %s
@@ -44,6 +42,6 @@ def search_movies_by_genre_and_year(genre, year):
             """
             cursor.execute(sql_query, (genre, year))
             result = cursor.fetchall()
-            return result
+            return result, sql_query
     finally:
         connection.close()

@@ -11,10 +11,8 @@ BOLD_YELLOW_UNDERLINE = "\033[1;33;4m"
 BOLD_GREEN_BACKGROUND = "\033[1;42m"
 
 
-
 def print_formated(text, format):
     print(f"{format}{text}{RESET}")
-
 
 
 
@@ -36,9 +34,9 @@ def main():
         choice = input("\nВведите номер действия: ")
 
         if choice == "1":
-            keyword = input("Введите ключевое слово для поиска фильмов: ")
-            movies = search_movies_by_keyword(keyword)
-            save_search_query(keyword)
+            keyword = input("Введите ключевое слово для поиска фильмов: ").lower()
+            movies, sql_query = search_movies_by_keyword(keyword)
+            save_search_query(keyword, sql_query)
             display_movies(movies)
 
         elif choice == "2":
@@ -48,10 +46,10 @@ def main():
             print_formated("Годы выпуска:", BOLD_YELLOW_UNDERLINE)
             print("1980 - 2023")
 
-            genre = input("\nВведите жанр: ")
+            genre = input("\nВведите жанр: ").lower()
             year = input("Введите год: ")
-            movies = search_movies_by_genre_and_year(genre, year)
-            save_search_query(f"{genre} {year}")
+            movies, sql_query = search_movies_by_genre_and_year(genre, year)
+            save_search_query(f"{genre} {year}", sql_query)
             display_movies(movies)
 
         elif choice == "3":
@@ -69,13 +67,14 @@ def display_movies(movies):
     if movies:
         print_formated(f"\nНайдено фильмов: {len(movies)}", BOLD_GREEN)
         for movie in movies:
-            print(f'Название: "{movie.get("title")}",  Год выпуска: {movie.get("release_year")}')
+            print(f'Название: "{movie.get("title")}"({movie.get("release_year")}). '
+                  f'\n📝Описание фильма: {movie.get("description")}\n')
     else:
         print_formated("\nФильмы не найдены.", BOLD_RED)
 
 def display_popular_queries(queries):
     if queries:
-        print_formated("Самые популярные запросы:", BOLD_GREEN)
+        print_formated("Самые популярные запросы (TOP 5):", BOLD_GREEN)
         for query in queries:
             print(f"Запрос: {query[0]}, Количество: {query[1]}")
     else:
